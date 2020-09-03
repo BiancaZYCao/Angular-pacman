@@ -184,7 +184,8 @@ export class AppComponent implements OnInit{
       this.squares[ghost.currentIndex].classList.remove('ghost');
       this.squares[ghost.currentIndex].classList.remove(ghost.className);
       //first stage : helping ghost moving out of lair
-      if(ghost.className != "clyde" && this.squares[ghost.currentIndex].classList.contains('ghost-lair')){
+      if(//ghost.className != "clyde" && 
+      this.squares[ghost.currentIndex].classList.contains('ghost-lair')){
         this.moveGhostOut(ghost);
       }
       //second stage : helping ghost moving in the grid    
@@ -199,6 +200,10 @@ export class AppComponent implements OnInit{
       else if (ghost.className === "inky")
       {//strategy3 chasing pac-man
         this.moveGhostChase(ghost);
+      }
+      else if (ghost.className === "clyde")
+      {//strategy3 chasing pac-man
+        this.moveGhostChase2(ghost);
       }
       //add ghost to new location
       this.squares[ghost.currentIndex].classList.add('ghost');
@@ -224,7 +229,6 @@ export class AppComponent implements OnInit{
         {
           ghost.previousIndex = ghost.currentIndex;
           ghost.currentIndex -= this.width;
-          //console.log("ghost Blinky able to move up" + ghost.currentIndex);
         }
       else if (!this.squares[ghost.currentIndex + 1].classList.contains('wall')
       && (ghost.currentIndex +1 != ghost.previousIndex)
@@ -250,7 +254,7 @@ export class AppComponent implements OnInit{
   moveGhostRandom(ghost:Ghost) {
     const directions = [-1, +1, -this.width, +this.width];
     let direction = directions[Math.floor(Math.random() * directions.length)];
-    console.log(direction);
+    //console.log(direction);
     if (
       !this.squares[ghost.currentIndex + direction].classList.contains('wall') &&
       !this.squares[ghost.currentIndex + direction].classList.contains('ghost-lair')
@@ -261,8 +265,6 @@ export class AppComponent implements OnInit{
 }
 moveGhostChase(ghost:Ghost) {
   let directionsOrder = [];
-  console.log("ghost: inky chase");
-  //let direction = directions[Math.floor(Math.random() * directions.length)];
   if ((ghost.currentIndex % this.width) <= (this.pacmanCurrentIndex % this.width)//to right
     && (ghost.currentIndex/this.width) <= (this.pacmanCurrentIndex/this.width)//down
     ){
@@ -280,7 +282,7 @@ moveGhostChase(ghost:Ghost) {
   ){directionsOrder = [-1,-this.width,+1,+this.width];     
   }
   else {directionsOrder = [+1,+this.width,-1,-this.width];} 
-  //directionsOrder.forEach(direction => {
+  //directionsOrder.forEach(direction => { //got problem about breaking loop
   for ( let i=0;i<4;i++){
     let direction = directionsOrder[i];
     if (ghost.currentIndex + direction != ghost.previousIndex &&
@@ -294,26 +296,25 @@ moveGhostChase(ghost:Ghost) {
       }
   }
 }
-moveGhostChase2(ghost:Ghost) {
+moveGhostChase2(ghost:Ghost) {//got problem
   let direction = 0;
-  console.log("ghost: inky chase");
   let test = 0;
-  //let direction = directions[Math.floor(Math.random() * directions.length)];
-  while (test < 5){
+  //test 100 times to avoid dead loop
+  while (test < 100){
     if (direction != 1 && (ghost.currentIndex % this.width) < (this.pacmanCurrentIndex % this.width)//to right
     ){
-      console.log(direction);
       direction = 1;}
     if (direction != -1 && (ghost.currentIndex % this.width) >= (this.pacmanCurrentIndex % this.width)//left
-    ){console.log(direction);
+    ){
       direction = -1;}
     if (direction != -this.width && (ghost.currentIndex/this.width) >= (this.pacmanCurrentIndex/this.width)//up
-    ){console.log(direction);
+    ){
       direction = -this.width;}
     if (direction != +this.width && (ghost.currentIndex/this.width) < (this.pacmanCurrentIndex/this.width)//up
-    ){console.log(direction);
+    ){
       direction = +this.width;}
-    if (!this.squares[ghost.currentIndex + direction].classList.contains('wall') &&
+    if (ghost.currentIndex + direction != ghost.previousIndex &&
+      !this.squares[ghost.currentIndex + direction].classList.contains('wall') &&
         !this.squares[ghost.currentIndex + direction].classList.contains('ghost-lair')
       ){
         ghost.previousIndex = ghost.currentIndex;
